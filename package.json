@@ -1,0 +1,14 @@
+{
+  "name": "nestjs-microservices",
+  "version": "1.0.0",
+  "description": "Nestjs RabbitMQ Microservices",
+  "scripts": {
+    "deploy": "sh deploy.sh"
+  },
+  "keywords": [
+    "microservices",
+    "nestjs"
+  ],
+  "author": "hmake98",
+  "license": "MIT"
+}
