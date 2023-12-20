@@ -1,8 +1,8 @@
 export class SignUpUser {
-  clinic: string;
+  clinic?: string;
   username: string;
   cid: string;
   password: string;
   firstName: string;
-  lastName: string;
+  lastName?: string;
 }

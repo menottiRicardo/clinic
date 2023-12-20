@@ -19,15 +19,15 @@ async function bootstrap() {
   app.use(cookieParser());
   configureSwagger(app);
 
-  app.connectMicroservice({
-    transport: Transport.RMQ,
-    options: {
-      urls: [configService.get('RABBITMQ_URL')],
-      queue: `${configService.get('RABBITMQ_AUTH_QUEUE')}`,
-      prefetchCount: 1,
-    },
-  });
-  await app.startAllMicroservices();
+  // app.connectMicroservice({
+  //   transport: Transport.RMQ,
+  //   options: {
+  //     urls: [configService.get('RABBITMQ_URL')],
+  //     queue: `${configService.get('RABBITMQ_AUTH_QUEUE')}`,
+  //     prefetchCount: 1,
+  //   },
+  // });
+  // await app.startAllMicroservices();
   await app.listen(configService.get('PORT'));
   console.log('🚀 Auth Service running on port: ' + configService.get('PORT'));
 }

@@ -35,7 +35,14 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const userFound = await this.usersService.findOne(user.username);
+    // include clinic info also
+    const userFound = await this.usersService.findOne(user.username, {
+      clinic: true,
+      select: ['name', '_id'],
+    });
+
+    console.log('userFound', userFound);
+
     const payload = {
       username: userFound.username,
       sub: userFound._id,
@@ -43,6 +50,7 @@ export class AuthService {
     };
     return {
       access_token: this.jwtService.sign(payload),
+      clinics: userFound.clinics,
     };
   }
 

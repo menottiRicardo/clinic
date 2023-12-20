@@ -7,10 +7,13 @@ import { Clinic, ClinicSchema } from './clinic.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: Clinic.name, schema: ClinicSchema },
-    ]),
+    MongooseModule.forFeature(
+      [
+        { name: User.name, schema: UserSchema },
+        { name: Clinic.name, schema: ClinicSchema },
+      ],
+      'auth',
+    ),
   ],
   providers: [UsersService],
   exports: [UsersService],

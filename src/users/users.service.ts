@@ -10,16 +10,30 @@ import { SignUpUser } from 'src/auth/auth.types';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private users: Model<User>,
-    @InjectModel(Clinic.name) private clinics: Model<Clinic>,
+    @InjectModel(User.name, 'auth') private users: Model<User>,
+    @InjectModel(Clinic.name, 'auth') private clinics: Model<Clinic>,
   ) {}
 
-  async findOne(username: string): Promise<User> {
-    return this.users.findOne({ username }).exec();
+  async findOne(
+    username: string,
+    options?: { clinic?: true; select?: string[] },
+  ): Promise<User> {
+    if (options?.clinic) {
+      console.log('options', options);
+      return (await this.users.findOne({ username })).populate({
+        path: 'clinics.clinic',
+        select: options?.select,
+      });
+    }
+    return this.users.findOne({ username });
   }
 
   async findUserById(id: string): Promise<User> {
     return this.users.findOne({ _id: id });
+  }
+
+  async findUserByCid(cid: string): Promise<User> {
+    return this.users.findOne({ cid });
   }
 
   async findClinicById(id: string): Promise<Clinic> {
@@ -53,13 +67,13 @@ export class UsersService {
 
   async createSidebar(user: User): Promise<Sidebar[]> {
     const sidebar: Sidebar[] = [];
-    if (user.role === 'DOCTOR') {
-      sidebar.push(...doctorSidebar);
-    } else if (user.role === 'ADMIN') {
-      // get classrooms
+    // if (user.role === 'DOCTOR') {
+    sidebar.push(...doctorSidebar);
+    // } else if (user.role === 'ADMIN') {
+    //   // get classrooms
 
-      sidebar.push(...adminSidebar);
-    }
+    //   sidebar.push(...adminSidebar);
+    // }
     return sidebar;
   }
 }

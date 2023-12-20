@@ -8,20 +8,38 @@ import { JwtAuthGuard } from './core/guards/jwt.guard';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
+import { AppointmentsModule } from './appointments/appointments.module';
+import { EventsModule } from './events/events.module';
+import { AvailabilityModule } from './availability/availability.module';
+import { PatientModule } from './patient/patient.module';
 @Module({
   imports: [
     AuthModule,
     UsersModule,
+    AppointmentsModule,
+    EventsModule,
+    AvailabilityModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
+      connectionName: 'auth',
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGO_URI'),
-        dbName: configService.get<string>('MONGO_DB_NAME'),
+        dbName: 'auth',
       }),
       inject: [ConfigService],
     }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGO_URI'),
+        dbName: 'appointment',
+      }),
+      connectionName: 'appointment',
+      inject: [ConfigService],
+    }),
+    PatientModule,
   ],
   controllers: [AppController],
   providers: [

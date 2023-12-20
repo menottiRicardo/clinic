@@ -1,4 +1,4 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as SchemaMon } from 'mongoose';
 import { Clinic } from './clinic.schema';
 
@@ -28,10 +28,18 @@ export class User {
   phone: string;
 
   @Prop()
-  role: string;
+  status: string;
 
-  @Prop({ type: [{ type: SchemaMon.Types.ObjectId, ref: Clinic.name }] })
-  clinic: Clinic[];
+  @Prop(
+    raw({
+      role: { type: String },
+      clinic: { type: SchemaMon.Types.ObjectId, ref: 'Clinic' },
+    }),
+  )
+  clinics: {
+    role: string;
+    clinic: SchemaMon.Types.ObjectId;
+  }[];
 
   _id: string;
 }
