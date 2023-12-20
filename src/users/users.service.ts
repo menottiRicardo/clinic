@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { User } from './users.schema';
 import { Clinic } from './clinic.schema';
 import { Sidebar } from 'src/core/types/sidebar';
-import { adminSidebar, doctorSidebar } from 'src/core/constants';
+import { doctorSidebar } from 'src/core/constants';
 import { SignUpUser } from 'src/auth/auth.types';
 
 @Injectable()
@@ -19,7 +19,6 @@ export class UsersService {
     options?: { clinic?: true; select?: string[] },
   ): Promise<User> {
     if (options?.clinic) {
-      console.log('options', options);
       return (await this.users.findOne({ username })).populate({
         path: 'clinics.clinic',
         select: options?.select,

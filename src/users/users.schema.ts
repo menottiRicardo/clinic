@@ -30,12 +30,12 @@ export class User {
   @Prop()
   status: string;
 
-  @Prop(
+  @Prop([
     raw({
       role: { type: String },
       clinic: { type: SchemaMon.Types.ObjectId, ref: 'Clinic' },
     }),
-  )
+  ])
   clinics: {
     role: string;
     clinic: SchemaMon.Types.ObjectId;

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/users.schema';
@@ -34,24 +34,43 @@ export class AuthService {
     }
   }
 
-  async login(user: any) {
-    // include clinic info also
-    const userFound = await this.usersService.findOne(user.username, {
-      clinic: true,
-      select: ['name', '_id'],
-    });
+  async login(user: { username: string; password: string; clinicId?: string }) {
+    // if clinicId is provided, then generate token for the right role
+    try {
+      if (user?.clinicId) {
+        const userFound = await this.usersService.findOne(user.username);
+        const role = userFound.clinics.find(
+          (clinic) => clinic.clinic.toString() === user.clinicId,
+        ).role;
+        const payload = {
+          username: userFound.username,
+          sub: userFound._id,
+          role,
+        };
+        return {
+          access_token: this.jwtService.sign(payload),
+        };
+      }
 
-    console.log('userFound', userFound);
+      // if no clinicId is provided, then generate token for doc role
+      const userFound = await this.usersService.findOne(user.username, {
+        clinic: true,
+        select: ['name', '_id'],
+      });
 
-    const payload = {
-      username: userFound.username,
-      sub: userFound._id,
-      role: 'DOCTOR',
-    };
-    return {
-      access_token: this.jwtService.sign(payload),
-      clinics: userFound.clinics,
-    };
+      // mock role
+      const payload = {
+        username: userFound.username,
+        sub: userFound._id,
+        role: 'DOCTOR',
+      };
+      return {
+        access_token: this.jwtService.sign(payload),
+        clinics: userFound.clinics,
+      };
+    } catch (error) {
+      throw new BadRequestException(error.message || 'Invalid credentials');
+    }
   }
 
   async signup(user: SignUpUser) {
